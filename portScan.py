@@ -30,6 +30,7 @@ def main():
 	print("\n[*] Scanning....")
 	start_time = time.time()
 	host_ip = socket.gethostbyname(host)
+  print("\n[*] Host IP: {}".format(host_ip)) 
 
 	scan_host(start_port, end_port, host_ip)        
 
