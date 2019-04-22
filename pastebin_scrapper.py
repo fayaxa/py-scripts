@@ -4,18 +4,25 @@ Pastebin Scrapper
 Requirements: Python3, requests package
 
 Usage: 
-Replace the words in KEYWORDS to shortlist.
+The words in KEYWORDS will be shortlisted for in each paste.
+If keyword is found it will the paste will be further refined using 
+the list BLACKLIST.
 If no keywords are entered, the script will simply display the text of
 every paste.
-
+Refresh rate is set to once 30 second, setting it lower might result
+in getting blocked.
 '''
+
 import os
 import re
 import sys
 import time
 import requests
+from datetime import datetime
 
-KEYWORDS = ['keyword1', 'keyword2', 'keyword3']
+REFRESH = 30
+KEYWORDS = ['Keyword1','Keyword2', 'Keyword3']
+BLACKLIST = ['Keyword4','Keyword5', 'Keyword6']
 
 def get_data(url):
     try:
@@ -43,16 +50,24 @@ def check_paste(paste_text, paste_id):
 
     for word in KEYWORDS:
         if word in paste_text:
-            print ("Keyword '{}' found at http://pastebin.com/raw.php?i={}"
+            if any(w in paste_text for w in BLACKLIST):
+                continue
+            else:
+                print ("Keyword '{}' found at http://pastebin.com/raw.php?i={}"
                             .format(word, paste_id))
 
 def main():
     print ('\nInitializing...\n')
     recent_pastes = []
-    count = 1
     try:
         while True:
             new_pastes = get_recent_pastes()
+
+            if len(new_pastes) == 0:
+                print("[!] Blocked, retry later. {}.\n"
+                        .format(datetime.now()
+                        .strftime('%Y-%m-%d %H:%M:%S')))
+                sys.exit(0)
 
             for paste_id in new_pastes:
                 time.sleep(0.5)
@@ -66,7 +81,7 @@ def main():
                         check_paste(paste_text, paste_id)
                     
         print ('\nChecking For New pastes.....\n')
-        time.sleep(15)
+        time.sleep(REFRESH)
 
     except KeyboardInterrupt:
         print ("\n[!] Keyboard Interrupt, Exiting...")
