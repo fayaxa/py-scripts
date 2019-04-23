@@ -9,8 +9,6 @@ If keyword is found it will the paste will be further refined using
 the list BLACKLIST.
 If no keywords are entered, the script will simply display the text of
 every paste.
-Refresh rate is set to once 30 second, setting it lower might result
-in getting blocked.
 '''
 
 import os
@@ -20,9 +18,9 @@ import time
 import requests
 from datetime import datetime
 
-REFRESH = 30
-KEYWORDS = ['Keyword1','Keyword2', 'Keyword3']
-BLACKLIST = ['Keyword4','Keyword5', 'Keyword6']
+KEYWORDS = ['Keyword1', 'Keyword2', 'Keyword3']
+
+BLACKLIST = ['Keyword3','Keyword4', 'Keyword5']
 
 def get_data(url):
     try:
@@ -55,6 +53,9 @@ def check_paste(paste_text, paste_id):
             else:
                 print ("Keyword '{}' found at http://pastebin.com/raw.php?i={}"
                             .format(word, paste_id))
+                index = paste_text.index(word)
+                print (paste_text[index:index+30].replace('\n', '-'))
+                print ('')
 
 def main():
     print ('\nInitializing...\n')
@@ -81,7 +82,7 @@ def main():
                         check_paste(paste_text, paste_id)
                     
         print ('\nChecking For New pastes.....\n')
-        time.sleep(REFRESH)
+        time.sleep(46)
 
     except KeyboardInterrupt:
         print ("\n[!] Keyboard Interrupt, Exiting...")
